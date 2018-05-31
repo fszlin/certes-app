@@ -1,0 +1,42 @@
+
+@import "./bootstrap.scss";
+
+.app-container {
+    max-width: $app-width;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: $white;
+}
+
+main.container {
+    max-width: $app-width;
+}
+
+footer.container {
+    max-width: $app-width;
+    color: $white;
+    padding-top: 2em;
+    padding-bottom: 2em;
+    background-color: theme-color("dark");
+    box-shadow: 0 50vh 0 50vh theme-color("dark");
+}
+
+footer nav > ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+main {
+    background-color: $gray-100;
+}
+
+main .jumbotron {
+    margin-left: -$grid-gutter-width / 2;
+    margin-right: -$grid-gutter-width / 2;
+}
+
+.intro-block {
+    background-color: $white;
+    margin-top: $grid-gutter-width / 2;
+    margin-bottom: $grid-gutter-width / 2;
+}
