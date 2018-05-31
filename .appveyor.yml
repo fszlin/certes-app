@@ -39,8 +39,8 @@ nuget:
 
 build_script:
   - ps: cd ./src/Certes.Spa
-  - ps: npm install
-  - ps: npm run build
+  - cmd: npm install
+  - cmd: npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
 
 test: off
