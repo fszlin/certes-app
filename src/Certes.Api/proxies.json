@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "spa-index": {
+      "matchCondition": {
+        "route": "/",
+        "methods": [
+          "GET"
+        ]
+      },
+      "backendUri": "https://certesapp.blob.core.windows.net/spa/index.html"
+    },
+    "spa-js": {
+      "matchCondition": {
+        "route": "/{file}.js",
+        "methods": [
+          "GET"
+        ]
+      },
+      "responseOverrides": {
+        "response.headers.Content-Type": "text/javascript"
+      },
+      "backendUri": "https://certesapp.blob.core.windows.net/spa/{file}.js"
+    },
+    "spa-static-js": {
+      "matchCondition": {
+        "route": "/static/js/{*path}",
+        "methods": [
+          "GET"
+        ]
+      },
+      "responseOverrides": {
+        "response.headers.Content-Type": "text/javascript"
+      },
+      "backendUri": "https://certesapp.blob.core.windows.net/spa/static/js/{path}"
+    },
+    "spa-static": {
+      "matchCondition": {
+        "route": "/{*path}",
+        "methods": [
+          "GET"
+        ]
+      },
+      "backendUri": "https://certesapp.blob.core.windows.net/spa/{path}"
+    }
+  }
+}
