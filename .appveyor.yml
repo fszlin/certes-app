@@ -24,6 +24,8 @@ environment:
     secure: icfPnryDWgqU1TmP3J7gsidrpY9jGAuWY4gXf6CeDkVOELNN25JaeMvaRztUqtlb
   CERTES_AZURE_CLIENT_SECRET:
     secure: igTLkiccsMP8ctXsHH6ymG8CKv6dXbi0HUqjcqyjfAZcgJp5NtDWH/7Ch0FVw9gt
+  SPA_BLOB_KEY:
+    secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
 
 cache:
 
@@ -40,20 +42,6 @@ build_script:
   - cmd: npm install
   - cmd: npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
+  - ps: AzCopy /Source:./src/Certes.Spa/build/ /Dest:https://certesapp.blob.core.windows.net/spa/$($env:APPVEYOR_BUILD_VERSION)/ /DestKey:$($env:SPA_BLOB_KEY) /S
 
 test: off
-
-artifacts:
-  - path: './src/Certes.Spa/build/**/*.*'
-    name: spa
-
-deploy:
-  provider: AzureBlob
-  storage_account_name: certesapp
-  storage_access_key:
-    secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
-  container: spa
-  folder: $(APPVEYOR_BUILD_VERSION)
-  artifact: spa
-  unzip: false
-  set_content_type: true
