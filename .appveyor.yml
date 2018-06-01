@@ -51,7 +51,7 @@ deploy:
   provider: AzureBlob
   storage_account_name: certesapp
   storage_access_key:
-    secure: hN2Y0zg6KudfpAiY9YrpYxWLIcmQ+H2FY0hE5D3pWvZUKGTYX/xS9X+YzURJ14hC+nYwSXkMjqTMtJL/scD3vVoRvoePfsYFnhZ0pEA0nC++Be/1Vn0Bafid5ydkGiUr
+    secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
   container: spa
   folder: $(APPVEYOR_BUILD_VERSION)
   artifact: spa
