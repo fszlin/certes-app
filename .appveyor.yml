@@ -32,7 +32,7 @@ cache:
 
 install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -Version 2.1.300
+  - ps: .\dotnet-install.ps1 -Version 2.1.300 -InstallDir ./dotnet2.1
   - ps: Install-Product node ''
 
 nuget:
@@ -40,6 +40,7 @@ nuget:
 
 build_script:
   - dotnet tool install --global dotnet-certes
+  - ps: $env:DOTNET_ROOT = "$($env:APPVEYOR_BUILD_FOLDER)\dotnet2.1"
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
   - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
   - ps: $order = certes order new www.certes.app $san | ConvertFrom-Json
