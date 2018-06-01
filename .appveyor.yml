@@ -45,8 +45,14 @@ build_script:
   - ps: $env:DOTNET_ROOT = "$($env:APPVEYOR_BUILD_FOLDER)\dotnet2.1"
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
   - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
-  - ps: certes order new www.certes.app $san
+  - ps: $order = certes order new www.certes.app $san | ConvertFrom-Json
   - ps: Add-AppveyorMessage -Message $order.location
+  - ps: certes az dns $order.location www.certes.app --resource-group certes
+  - ps: certes az dns $order.location $san --resource-group certes
+  - ps: certes order validate $order.location www.certes.app dns
+  - ps: certes order validate $order.location $san dns
+  - ps: certes order finalize $order.location --dn "CN=www.certes.app" --out ./key.pem
+  - ps: certes az app $order.location www.certes.app certes-app --resource-group certes --private-key ./key.pem
   - cd ./src/Certes.Spa
   - npm install
   - npm run build
