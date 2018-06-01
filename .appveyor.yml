@@ -24,9 +24,6 @@ environment:
     secure: icfPnryDWgqU1TmP3J7gsidrpY9jGAuWY4gXf6CeDkVOELNN25JaeMvaRztUqtlb
   CERTES_AZURE_CLIENT_SECRET:
     secure: igTLkiccsMP8ctXsHH6ymG8CKv6dXbi0HUqjcqyjfAZcgJp5NtDWH/7Ch0FVw9gt
-  AZURE_STORAGE_ACCOUNT: certesapp
-  AZURE_STORAGE_KEY:
-    secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
 
 cache:
 
@@ -43,6 +40,16 @@ build_script:
   - npm install
   - npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
-  - ps: az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --account-name $env:AZURE_STORAGE_ACCOUNT --account-key $env:AZURE_STORAGE_KEY
+
+deploy:
+  provider: AzureBlob
+  storage_account_name: certesapp
+  storage_access_key:
+    secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
+  container: spa
+  folder: ./src/Certes.Spa/build/
+  artifact: spa
+  unzip: false
+  set_content_type: true
 
 test: off
