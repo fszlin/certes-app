@@ -43,7 +43,7 @@ build_script:
   - ps: $env:DOTNET_ROOT = "$($env:APPVEYOR_BUILD_FOLDER)\dotnet2.1"
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
   - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
-  - ps: certes order new www.certes.app $san | ConvertFrom-Json
+  - ps: certes order new www.certes.app $san
   - ps: Add-AppveyorMessage -Message $order.location
   - cd ./src/Certes.Spa
   - npm install
