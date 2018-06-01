@@ -43,7 +43,6 @@ build_script:
   - npm install
   - npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
-  - az storage container create -n spa.$($env:APPVEYOR_BUILD_VERSION)
-  - az storage blob upload-batch -d spa.$($env:APPVEYOR_BUILD_VERSION) -s ./src/Certes.Spa/build/
+  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --account-name $($env:AZURE_STORAGE_ACCOUNT) --account-key $($env:AZURE_STORAGE_KEY)
 
 test: off
