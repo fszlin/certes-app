@@ -52,8 +52,8 @@ deploy:
   storage_account_name: certesapp
   storage_access_key:
     secure: hN2Y0zg6KudfpAiY9YrpYxWLIcmQ+H2FY0hE5D3pWvZUKGTYX/xS9X+YzURJ14hC+nYwSXkMjqTMtJL/scD3vVoRvoePfsYFnhZ0pEA0nC++Be/1Vn0Bafid5ydkGiUr
-  container: builds
-  folder: ./src/Certes.Spa/build/
+  container: spa
+  folder: $(APPVEYOR_BUILD_VERSION)
   artifact: spa
   unzip: false
   set_content_type: true
