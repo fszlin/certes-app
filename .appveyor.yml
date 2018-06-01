@@ -41,6 +41,12 @@ build_script:
   - npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
 
+test: off
+ 
+ artifacts:
+   - path: './src/Certes.Spa/build/**/*.*'
+     name: spa
+
 deploy:
   provider: AzureBlob
   storage_account_name: certesapp
@@ -51,5 +57,3 @@ deploy:
   artifact: spa
   unzip: false
   set_content_type: true
-
-test: off
