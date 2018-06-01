@@ -23,9 +23,9 @@ environment:
   CERTES_AZURE_TENANT_ID:
     secure: 4FrR9+ARA8H+bLFFQDT4C1TAZv/LTO69vFpfjpqR5BVTedqgsZcey6xuS2TDA46l
   CERTES_AZURE_CLIENT_ID:
-    secure: icfPnryDWgqU1TmP3J7gsidrpY9jGAuWY4gXf6CeDkVOELNN25JaeMvaRztUqtlb
+    secure: dp7MAPn/z/amC3/+IpVOdDtXESia2b/kgMj4DlzgmJfiWVewj1VFHQjBr6KO2cTZ
   CERTES_AZURE_CLIENT_SECRET:
-    secure: igTLkiccsMP8ctXsHH6ymG8CKv6dXbi0HUqjcqyjfAZcgJp5NtDWH/7Ch0FVw9gt
+    secure: vauTaR2HBmDtUeuWbKncWqJlbkqjE0kdvxOvl0VfbMBnZIBA+bhgQvgdErBFZ8/H
   AZURE_STORAGE_ACCOUNT: certesapp
   AZURE_STORAGE_KEY:
     secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
