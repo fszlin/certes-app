@@ -43,8 +43,6 @@ nuget:
   disable_publish_on_pr: true
 
 build_script:
-  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID%
-  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID%
   # fix dotnet path
   - ps: $env:DOTNET_ROOT = "$($env:APPVEYOR_BUILD_FOLDER)\dotnet2.1"
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
@@ -63,10 +61,13 @@ build_script:
   - cd ./src/Certes.Spa
   - npm install
   - npm run build
-  - ps: cd $env:APPVEYOR_BUILD_FOLDER
+  - cd %APPVEYOR_BUILD_FOLDER%
   - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --no-progress
   # deploy az func
   - dotnet restore
   - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_PWD%
+  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID%
+  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID%
   - az webapp deployment slot swap -g certes -n certes-app --slot ci
+
 test: off
