@@ -43,6 +43,6 @@ build_script:
   - npm install
   - npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
-  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/
+  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --no-progress
 
 test: off
