@@ -30,7 +30,7 @@ environment:
   AZURE_STORAGE_KEY:
     secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
   MSDEPLOY_PWD:
-    secure: PHN6iwP2Nzdjc/5aR6c33A8PuJGpHwPuauQHNWLm5C4l5THBbjowu+axJymPOTWnJjmX7lHXhvX0RUc2SNxrkw==
+    secure: qZR34x3SpE/pc5EwpgxjrfpEauJ6I+peFm5ubYwy9u5ESdUjcyaQXHzX1cyjDQK5JUZOX5tS6GAYG214huB22g==
 
 cache:
 
@@ -43,6 +43,8 @@ nuget:
   disable_publish_on_pr: true
 
 build_script:
+  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID%
+  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID%
   # fix dotnet path
   - ps: $env:DOTNET_ROOT = "$($env:APPVEYOR_BUILD_FOLDER)\dotnet2.1"
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
@@ -66,5 +68,5 @@ build_script:
   # deploy az func
   - dotnet restore
   - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_PWD%
-
+  - az webapp deployment slot swap -g certes -n certes-app --slot ci
 test: off
