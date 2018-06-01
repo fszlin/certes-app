@@ -24,7 +24,8 @@ environment:
     secure: icfPnryDWgqU1TmP3J7gsidrpY9jGAuWY4gXf6CeDkVOELNN25JaeMvaRztUqtlb
   CERTES_AZURE_CLIENT_SECRET:
     secure: igTLkiccsMP8ctXsHH6ymG8CKv6dXbi0HUqjcqyjfAZcgJp5NtDWH/7Ch0FVw9gt
-  SPA_BLOB_KEY:
+  AZURE_STORAGE_ACCOUNT: certesapp
+  AZURE_STORAGE_KEY:
     secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
 
 cache:
@@ -38,10 +39,11 @@ nuget:
   disable_publish_on_pr: false
 
 build_script:
-  - ps: cd ./src/Certes.Spa
-  - cmd: npm install
-  - cmd: npm run build
+  - cd ./src/Certes.Spa
+  - npm install
+  - npm run build
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
-  - ps: AzCopy /Source:./src/Certes.Spa/build/ /Dest:https://certesapp.blob.core.windows.net/spa/$($env:APPVEYOR_BUILD_VERSION)/ /DestKey:$($env:SPA_BLOB_KEY) /S
+  - az storage container create -n spa.$($env:APPVEYOR_BUILD_VERSION)
+  - az storage blob upload-batch -d spa.$($env:APPVEYOR_BUILD_VERSION) -s ./src/Certes.Spa/build/
 
 test: off
