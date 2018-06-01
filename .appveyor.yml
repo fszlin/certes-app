@@ -40,7 +40,7 @@ install:
   - ps: Install-Product node ''
 
 nuget:
-  disable_publish_on_pr: false
+  disable_publish_on_pr: true
 
 build_script:
   # fix dotnet path
