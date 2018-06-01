@@ -16,8 +16,6 @@ clone_depth: 1
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  CERTES_ACME_ACCOUNT_KEY:
-    secure: fmkn8cbE+A1dHITS3s7NADqKi+2rYNKSSjuuLWvkX199WThoEptlCXKAwxlMhWZtBrXdNU5D+1RHI2ouDwWF7hwcIHcGf30v2UohFR+YHujT/N6c4EnK3261CNNm6AklbINPJ72+QPu04/NqEzDAtA==
   CERTES_AZURE_SUBSCRIPTION_ID:
     secure: FSK01SfyZI0x6AX2XVDxcE6kUAmg4fYja2hsNcQNBxa1PBddSZtZ8rthvO5c8o/R
   CERTES_AZURE_TENANT_ID:
@@ -50,3 +48,12 @@ artifacts:
     name: spa
 
 deploy:
+  provider: AzureBlob
+  storage_account_name: certesapp
+  storage_access_key:
+    secure: hN2Y0zg6KudfpAiY9YrpYxWLIcmQ+H2FY0hE5D3pWvZUKGTYX/xS9X+YzURJ14hC+nYwSXkMjqTMtJL/scD3vVoRvoePfsYFnhZ0pEA0nC++Be/1Vn0Bafid5ydkGiUr
+  container: builds
+  folder: ./src/Certes.Spa/build/
+  artifact: spa
+  unzip: false
+  set_content_type: true
