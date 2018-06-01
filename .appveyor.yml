@@ -17,7 +17,7 @@ environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   CERTES_AZURE_SUBSCRIPTION_ID:
-    secure: FSK01SfyZI0x6AX2XVDxcE6kUAmg4fYja2hsNcQNBxa1PBddSZtZ8rthvO5c8o/R
+    secure: u2ucwWE9SyLLf4RRaNioPpgoqHf9vIwY+kgtbTmf8vKXIKZIPaLOFDC8gH7rZd06
   CERTES_AZURE_TENANT_ID:
     secure: 4FrR9+ARA8H+bLFFQDT4C1TAZv/LTO69vFpfjpqR5BVTedqgsZcey6xuS2TDA46l
   CERTES_AZURE_CLIENT_ID:
@@ -43,7 +43,7 @@ build_script:
   - ps: $env:DOTNET_ROOT = "$($env:APPVEYOR_BUILD_FOLDER)\dotnet2.1"
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
   - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
-  - ps: $order = certes order new www.certes.app $san | ConvertFrom-Json
+  - ps: certes order new www.certes.app $san | ConvertFrom-Json
   - ps: Add-AppveyorMessage -Message $order.location
   - cd ./src/Certes.Spa
   - npm install
