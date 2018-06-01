@@ -39,6 +39,11 @@ nuget:
   disable_publish_on_pr: false
 
 build_script:
+  - dotnet tool install dotnet-certes
+  - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
+  - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
+  - ps: $order = certes order new www.certes.app $san | ConvertFrom-Json
+  - ps: Add-AppveyorMessage -Message $order.location
   - cd ./src/Certes.Spa
   - npm install
   - npm run build
