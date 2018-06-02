@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Host;
 
 namespace Certes.Api
 {
+    [AadAuthentication]
     public static class OrderFunction
     {
         [FunctionName("Order")]

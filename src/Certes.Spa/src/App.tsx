@@ -1,3 +1,5 @@
+// tslint:disable:no-console
+import * as Msal from 'msal';
 import * as React from 'react';
 import {
     Collapse,
@@ -7,14 +9,24 @@ import {
 } from 'reactstrap';
 
 import './App.css';
-
+import { IClientConfig } from './ClientConfig';
 import logo from './logo.svg';
 
-class App extends React.Component<{}, { isOpen: boolean }> {
-    constructor(props: { isOpen: boolean }) {
+interface IAppProps {
+    config: IClientConfig
+};
+
+interface IAppState {
+    isOpen: boolean
+};
+
+class App extends React.Component<IAppProps, IAppState> {
+    constructor(props: IAppProps) {
         super(props);
 
         this.toggle = this.toggle.bind(this);
+        this.login = this.login.bind(this);
+
         this.state = {
             isOpen: false
         };
@@ -24,6 +36,23 @@ class App extends React.Component<{}, { isOpen: boolean }> {
         this.setState({
             isOpen: !this.state.isOpen
         });
+    }
+
+    public async login() {
+
+        const maslApp = new Msal.UserAgentApplication(
+            this.props.config.aadClientId,
+            `https://login.microsoftonline.com/tfp/${this.props.config.aadTenant}/b2c_1_susi`,
+            (errorDesc, token, error, tokenType) => {
+                console.log(errorDesc);
+            },
+            {
+                cacheLocation: 'localStorage',
+                redirectUri: window.location.origin,
+            });
+
+        const res = await maslApp.loginPopup(['TBD']);
+        console.log(res);
     }
 
     public render() {
@@ -44,6 +73,12 @@ class App extends React.Component<{}, { isOpen: boolean }> {
                                 <li className="nav-item">
                                     <a className="nav-link" href="https://github.com/fszlin/certes/issues">
                                         <i className="far fa-bug" /> Issues</a>
+                                </li>
+                            </ul>
+                            <ul className="navbar-nav">
+                                <li className="nav-item">
+                                    <a className="nav-link" href="#" onClick={this.login}>
+                                        <i className="far fa-user-circle" /> Login</a>
                                 </li>
                             </ul>
                         </Collapse>
