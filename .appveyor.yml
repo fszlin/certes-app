@@ -32,7 +32,6 @@ environment:
   MSDEPLOY_PWD:
     secure: qZR34x3SpE/pc5EwpgxjrfpEauJ6I+peFm5ubYwy9u5ESdUjcyaQXHzX1cyjDQK5JUZOX5tS6GAYG214huB22g==
   REACT_APP_API_ROOT: https://www.certes.app
-  REACT_APP_VERSION: {build}
 
 cache:
 
@@ -60,6 +59,7 @@ build_script:
   - ps: certes order finalize $order.location --dn "CN=www.certes.app" --out ./key.pem | Out-Null
   - ps: certes az app $order.location www.certes.app certes-app --resource-group certes --private-key ./key.pem | Out-Null
   # deploy SPA
+  - ps: $env:REACT_APP_VERSION=$env:APPVEYOR_BUILD_NUMBER
   - cd ./src/Certes.Spa
   - npm install
   - npm run build
