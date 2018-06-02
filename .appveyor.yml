@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.0.0.{build}
 
 branches:
   # whitelist
@@ -31,6 +31,8 @@ environment:
     secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
   MSDEPLOY_PWD:
     secure: qZR34x3SpE/pc5EwpgxjrfpEauJ6I+peFm5ubYwy9u5ESdUjcyaQXHzX1cyjDQK5JUZOX5tS6GAYG214huB22g==
+  REACT_APP_API_ROOT: https://www.certes.app
+  REACT_APP_VERSION: {build}
 
 cache:
 
@@ -51,12 +53,12 @@ build_script:
   - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
   - ps: $order = certes order new www.certes.app $san | ConvertFrom-Json
   - ps: Add-AppveyorMessage -Message $order.location
-  - ps: certes az dns $order.location www.certes.app --resource-group certes
-  - ps: certes az dns $order.location $san --resource-group certes
-  - ps: certes order validate $order.location www.certes.app dns
-  - ps: certes order validate $order.location $san dns
-  - ps: certes order finalize $order.location --dn "CN=www.certes.app" --out ./key.pem
-  - ps: certes az app $order.location www.certes.app certes-app --resource-group certes --private-key ./key.pem
+  - ps: certes az dns $order.location www.certes.app --resource-group certes | Out-Null
+  - ps: certes az dns $order.location $san --resource-group certes | Out-Null
+  - ps: certes order validate $order.location www.certes.app dns | Out-Null
+  - ps: certes order validate $order.location $san dns | Out-Null
+  - ps: certes order finalize $order.location --dn "CN=www.certes.app" --out ./key.pem | Out-Null
+  - ps: certes az app $order.location www.certes.app certes-app --resource-group certes --private-key ./key.pem | Out-Null
   # deploy SPA
   - cd ./src/Certes.Spa
   - npm install
@@ -66,8 +68,8 @@ build_script:
   # deploy az func
   - dotnet restore
   - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_PWD%
-  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID%
-  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID%
-  - az webapp deployment slot swap -g certes -n certes-app --slot ci
+  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID% | Out-Null
+  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID% | Out-Null
+  - az webapp deployment slot swap -g certes -n certes-app --slot ci | Out-Null
 
 test: off
