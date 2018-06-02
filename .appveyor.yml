@@ -61,15 +61,15 @@ build_script:
   # deploy SPA
   - ps: $env:REACT_APP_VERSION=$env:APPVEYOR_BUILD_NUMBER
   - cd ./src/Certes.Spa
-  - npm install
-  - npm run build
+  - npm install > nul
+  - npm run build > nul
   - cd %APPVEYOR_BUILD_FOLDER%
-  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --no-progress
+  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --no-progress > nul
   # deploy az func
-  - dotnet restore
-  - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_PWD%
-  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID% | Out-Null
-  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID% | Out-Null
-  - az webapp deployment slot swap -g certes -n certes-app --slot ci | Out-Null
+  - dotnet restore > nul
+  - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_PWD% > nul
+  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID% > nul
+  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID% > nul
+  - az webapp deployment slot swap -g certes -n certes-app --slot ci > nul
 
 test: off
