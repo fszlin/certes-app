@@ -53,8 +53,8 @@ build_script:
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
   # renew SSL
   - dotnet tool install --global dotnet-certes
-  - ps: $nonce = "ci-$($env:APPVEYOR_BUILD_NUMBER % 10).certes.app"
-  - ps: $order = certes order new *.certes.app api.certes.app $nonce | ConvertFrom-Json
+  - ps: $nonce = "*.ci-$($env:APPVEYOR_BUILD_NUMBER % 10).certes.app"
+  - ps: $order = certes order new *.certes.app $nonce | ConvertFrom-Json
   - ps: Add-AppveyorMessage -Message $order.location
   - ps: certes az dns $order.location *.certes.app --resource-group certes | Out-Null
   - ps: certes az dns $order.location $nonce --resource-group certes | Out-Null
