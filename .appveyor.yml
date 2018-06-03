@@ -61,8 +61,8 @@ build_script:
   - ps: certes order validate $order.location *.certes.app dns | Out-Null
   - ps: certes order validate $order.location $nonce dns | Out-Null
   - ps: certes order finalize $order.location --dn "CN=*.certes.app" --out ./key.pem | Out-Null
-  - ps: certes az app $order.location *.certes.app certes-app --resource-group certes --private-key ./key.pem | Out-Null
-  - ps: certes az app $order.location *.certes.app certes-api --resource-group certes --private-key ./key.pem | Out-Null
+  - ps: certes az app $order.location *.certes.app certes-app --resource-group certes --private-key ./key.pem
+  - ps: certes az app $order.location *.certes.app certes-api --resource-group certes --private-key ./key.pem
   # deploy SPA
   - ps: $env:REACT_APP_VERSION=$env:APPVEYOR_BUILD_NUMBER
   - cd ./src/Certes.Spa
