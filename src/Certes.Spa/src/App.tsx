@@ -1,4 +1,6 @@
 // tslint:disable:no-console
+// tslint:disable:no-debugger
+import axios from 'axios';
 import * as Msal from 'msal';
 import * as React from 'react';
 import {
@@ -9,19 +11,52 @@ import {
 } from 'reactstrap';
 
 import './App.css';
-import { IClientConfig } from './ClientConfig';
 import logo from './logo.svg';
-
-interface IAppProps {
-    config: IClientConfig
-};
 
 interface IAppState {
     isOpen: boolean
 };
 
-class App extends React.Component<IAppProps, IAppState> {
-    constructor(props: IAppProps) {
+class App extends React.Component<{}, IAppState> {
+    private apiScope = 'https://certesapp.onmicrosoft.com/certes-api/user_impersonation';
+    private aadAuthority = `https://login.microsoftonline.com/tfp/${process.env.REACT_APP_AAD_TENANT}/b2c_1_susi`;
+    private aadPasswordResetAuthority = `https://login.microsoftonline.com/tfp/${process.env.REACT_APP_AAD_TENANT}/b2c_1_pwd`;
+    private maslApp = new Msal.UserAgentApplication(
+        `${process.env.REACT_APP_AAD_CLIENT_ID}`,
+        this.aadAuthority,
+        (errorDesc, token, error, tokenType) => {
+
+            console.log('global', errorDesc, token, error, tokenType);
+
+            if (tokenType === 'access_token') {
+                axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+                console.log('access token', token);
+            } else if (error.includes('access_denied') &&
+                // The user has forgotten their password.
+                errorDesc && errorDesc.startsWith('AADB2C90118:')) {
+
+                setTimeout(async () => {
+                    const resetPwdMaslApp = new Msal.UserAgentApplication(
+                        `${process.env.REACT_APP_AAD_CLIENT_ID}`,
+                        this.aadPasswordResetAuthority,
+                        (errorDesc1, token1, error1, tokenType1) => {
+                            console.log(errorDesc, token, error, tokenType);
+                        },
+                        {
+                            cacheLocation: 'localStorage',
+                            redirectUri: window.location.origin,
+                        });
+
+                    await resetPwdMaslApp.loginPopup([this.apiScope]);
+                }, 0);
+            }
+        },
+        {
+            cacheLocation: 'localStorage',
+            redirectUri: window.location.origin,
+        });
+
+    constructor(props: {}) {
         super(props);
 
         this.toggle = this.toggle.bind(this);
@@ -38,21 +73,25 @@ class App extends React.Component<IAppProps, IAppState> {
         });
     }
 
-    public async login() {
+    public async componentDidMount() {
+        try {
+            const token = await this.maslApp.acquireTokenSilent([this.apiScope]);
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            console.log('access token', token);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
-        const maslApp = new Msal.UserAgentApplication(
-            this.props.config.aadClientId,
-            `https://login.microsoftonline.com/tfp/${this.props.config.aadTenant}/b2c_1_susi`,
-            (errorDesc, token, error, tokenType) => {
-                console.log(errorDesc);
-            },
-            {
-                cacheLocation: 'localStorage',
-                redirectUri: window.location.origin,
-            });
-
-        const res = await maslApp.loginPopup(['TBD']);
-        console.log(res);
+    public async login(evt: React.MouseEvent<HTMLElement>) {
+        evt.preventDefault();
+        try {
+            const token = await this.maslApp.loginPopup([this.apiScope]);
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            console.log('access token', token);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     public render() {

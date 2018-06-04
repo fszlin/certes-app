@@ -34,6 +34,8 @@ environment:
   MSDEPLOY_CERTES_API_PWD:
     secure: T2FghxRhn/rE3vWkzq/ACu7CfuYGIa45tBJ8D/LrJ2ZKnY1naPAMz7EwXa5qgRlGgh/gSR9M5qfYDqGVwx2/kQ==
   REACT_APP_API_ROOT: https://api.certes.app
+  REACT_APP_AAD_CLIENT_ID: 2d5bcb4e-1f71-4de4-ac0a-a8d1de61679c
+  REACT_APP_AAD_TENANT: certesapp.onmicrosoft.com
 
 cache:
 
