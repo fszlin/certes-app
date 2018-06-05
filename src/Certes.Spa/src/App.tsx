@@ -1,7 +1,5 @@
 // tslint:disable:no-console
 // tslint:disable:no-debugger
-import axios from 'axios';
-import * as Msal from 'msal';
 import * as React from 'react';
 import {
     Collapse,
@@ -11,6 +9,7 @@ import {
 } from 'reactstrap';
 
 import './App.css';
+import * as Authz from './Authz';
 import logo from './logo.svg';
 
 interface IAppState {
@@ -18,44 +17,6 @@ interface IAppState {
 };
 
 class App extends React.Component<{}, IAppState> {
-    private apiScope = 'https://certesapp.onmicrosoft.com/certes-api/user_impersonation';
-    private aadAuthority = `https://login.microsoftonline.com/tfp/${process.env.REACT_APP_AAD_TENANT}/b2c_1_susi`;
-    private aadPasswordResetAuthority = `https://login.microsoftonline.com/tfp/${process.env.REACT_APP_AAD_TENANT}/b2c_1_pwd`;
-    private maslApp = new Msal.UserAgentApplication(
-        `${process.env.REACT_APP_AAD_CLIENT_ID}`,
-        this.aadAuthority,
-        (errorDesc, token, error, tokenType) => {
-
-            console.log('global', errorDesc, token, error, tokenType);
-
-            if (tokenType === 'access_token') {
-                axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-                console.log('access token', token);
-            } else if (error.includes('access_denied') &&
-                // The user has forgotten their password.
-                errorDesc && errorDesc.startsWith('AADB2C90118:')) {
-
-                setTimeout(async () => {
-                    const resetPwdMaslApp = new Msal.UserAgentApplication(
-                        `${process.env.REACT_APP_AAD_CLIENT_ID}`,
-                        this.aadPasswordResetAuthority,
-                        (errorDesc1, token1, error1, tokenType1) => {
-                            console.log(errorDesc, token, error, tokenType);
-                        },
-                        {
-                            cacheLocation: 'localStorage',
-                            redirectUri: window.location.origin,
-                        });
-
-                    await resetPwdMaslApp.loginPopup([this.apiScope]);
-                }, 0);
-            }
-        },
-        {
-            cacheLocation: 'localStorage',
-            redirectUri: window.location.origin,
-        });
-
     constructor(props: {}) {
         super(props);
 
@@ -74,24 +35,12 @@ class App extends React.Component<{}, IAppState> {
     }
 
     public async componentDidMount() {
-        try {
-            const token = await this.maslApp.acquireTokenSilent([this.apiScope]);
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-            console.log('access token', token);
-        } catch (err) {
-            console.log(err);
-        }
+        await Authz.acquireTokenSilent();
     }
 
     public async login(evt: React.MouseEvent<HTMLElement>) {
         evt.preventDefault();
-        try {
-            const token = await this.maslApp.loginPopup([this.apiScope]);
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-            console.log('access token', token);
-        } catch (err) {
-            console.log(err);
-        }
+        await Authz.loginPopup();
     }
 
     public render() {
