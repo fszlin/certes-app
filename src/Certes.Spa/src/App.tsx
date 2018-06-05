@@ -13,7 +13,8 @@ import * as Authz from './Authz';
 import logo from './logo.svg';
 
 interface IAppState {
-    isOpen: boolean
+    isAuthenticated: boolean,
+    isOpen: boolean,
 };
 
 class App extends React.Component<{}, IAppState> {
@@ -24,7 +25,8 @@ class App extends React.Component<{}, IAppState> {
         this.login = this.login.bind(this);
 
         this.state = {
-            isOpen: false
+            isAuthenticated: false,
+            isOpen: false,
         };
     }
 
@@ -35,12 +37,16 @@ class App extends React.Component<{}, IAppState> {
     }
 
     public async componentDidMount() {
-        await Authz.acquireTokenSilent();
+        this.setState({
+            isAuthenticated: await Authz.acquireTokenSilent(),
+        });
     }
 
     public async login(evt: React.MouseEvent<HTMLElement>) {
         evt.preventDefault();
-        await Authz.loginPopup();
+        this.setState({
+            isAuthenticated: await Authz.loginPopup(),
+        });
     }
 
     public render() {
@@ -65,8 +71,12 @@ class App extends React.Component<{}, IAppState> {
                             </ul>
                             <ul className="navbar-nav">
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#" onClick={this.login}>
-                                        <i className="far fa-user-circle" /> Login</a>
+                                    {this.state.isAuthenticated ?
+                                        (<a className="nav-link" href="#">
+                                            <i className="far fa-lock-alt" /> My Certificates</a>) :
+                                        (<a className="nav-link" href="#" onClick={this.login}>
+                                            <i className="far fa-user-circle" /> Login</a>)
+                                    }
                                 </li>
                             </ul>
                         </Collapse>
@@ -102,7 +112,8 @@ class App extends React.Component<{}, IAppState> {
                 <footer className="container">
                     <div className="row">
                         <div className="col-lg-4">
-                            &copy; 2018 - Certes Project. All rights reserved
+                            &copy; 2018 - <a href="https://github.com/fszlin/certes">Certes</a> Project.
+                            All rights reserved
                         </div>
                         <nav aria-describedby="footer-label-legal" className="col-lg-2 offset-lg-6">
                             <h3 id="footer-label-legal">Legal</h3>

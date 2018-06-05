@@ -30,8 +30,10 @@ export async function acquireTokenSilent() {
     try {
         const token = await maslApp.acquireTokenSilent([apiScope]);
         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        console.debug('acquireTokenSilent', true);
         return true;
     } catch {
+        console.debug('acquireTokenSilent', false);
         return false;
     }
 };
@@ -39,15 +41,21 @@ export async function acquireTokenSilent() {
 export async function resetPasswordPopup() {
     const token = await pwdMaslApp.loginPopup([apiScope]);
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    return true;
 }
 
 export async function loginPopup() {
     try {
         const token = await maslApp.loginPopup([apiScope]);
         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        return true;
     } catch (err) {
         if (typeof err === 'string') {
-            await resetPasswordPopup();
+            if (err.includes('AADB2C90118')) {
+                return await resetPasswordPopup();
+            }
         }
+
+        return false;
     }
 }
