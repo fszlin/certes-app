@@ -61,11 +61,11 @@ class App extends React.Component<{}, IAppState> {
                         <Collapse isOpen={this.state.isOpen} navbar={true}>
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item">
-                                    <a className="nav-link" href="https://github.com/fszlin/certes">
+                                    <a className="nav-link" href="https://github.com/fszlin/certes-app">
                                         <i className="fab fa-github" /> GitHub</a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="https://github.com/fszlin/certes/issues">
+                                    <a className="nav-link" href="https://github.com/fszlin/certes-app/issues">
                                         <i className="far fa-bug" /> Issues</a>
                                 </li>
                             </ul>
