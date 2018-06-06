@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.0.0.{build}
 
 branches:
   # whitelist
@@ -29,8 +29,13 @@ environment:
   AZURE_STORAGE_ACCOUNT: certesapp
   AZURE_STORAGE_KEY:
     secure: uz/DFUHwg8NbiuV2+T/tLpzfs8JCsl52oskYtTpzt1vTfa2A2ZGcHxQsiCvwi31uhfW3yLeG/6izbq/xqu/OeZ1tRUbsfZ4G7MLBKOgYF2h+B8BhiCtrGxFKVLN8/EMa
-  MSDEPLOY_PWD:
+  MSDEPLOY_CERTES_APP_PWD:
     secure: qZR34x3SpE/pc5EwpgxjrfpEauJ6I+peFm5ubYwy9u5ESdUjcyaQXHzX1cyjDQK5JUZOX5tS6GAYG214huB22g==
+  MSDEPLOY_CERTES_API_PWD:
+    secure: T2FghxRhn/rE3vWkzq/ACu7CfuYGIa45tBJ8D/LrJ2ZKnY1naPAMz7EwXa5qgRlGgh/gSR9M5qfYDqGVwx2/kQ==
+  REACT_APP_API_ROOT: https://api.certes.app
+  REACT_APP_AAD_CLIENT_ID: 2d5bcb4e-1f71-4de4-ac0a-a8d1de61679c
+  REACT_APP_AAD_TENANT: certesapp.onmicrosoft.com
 
 cache:
 
@@ -38,6 +43,8 @@ install:
   - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
   - ps: .\dotnet-install.ps1 -Version 2.1.300 -InstallDir ./dotnet2.1
   - ps: Install-Product node ''
+  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID% > nul
+  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID% > nul
 
 nuget:
   disable_publish_on_pr: true
@@ -48,26 +55,30 @@ build_script:
   - ps: $env:Path += ";$($env:USERPROFILE)\.dotnet\tools\"
   # renew SSL
   - dotnet tool install --global dotnet-certes
-  - ps: $san = "ci-$($env:APPVEYOR_BUILD_NUMBER).certes.app"
-  - ps: $order = certes order new www.certes.app $san | ConvertFrom-Json
+  - ps: $nonce = "*.ci-$($env:APPVEYOR_BUILD_NUMBER % 10).certes.app"
+  - ps: $order = certes order new *.certes.app $nonce | ConvertFrom-Json
   - ps: Add-AppveyorMessage -Message $order.location
-  - ps: certes az dns $order.location www.certes.app --resource-group certes
-  - ps: certes az dns $order.location $san --resource-group certes
-  - ps: certes order validate $order.location www.certes.app dns
-  - ps: certes order validate $order.location $san dns
-  - ps: certes order finalize $order.location --dn "CN=www.certes.app" --out ./key.pem
-  - ps: certes az app $order.location www.certes.app certes-app --resource-group certes --private-key ./key.pem
+  - ps: certes az dns $order.location *.certes.app --resource-group certes | Out-Null
+  - ps: certes az dns $order.location $nonce --resource-group certes | Out-Null
+  - ps: certes order validate $order.location *.certes.app dns | Out-Null
+  - ps: certes order validate $order.location $nonce dns | Out-Null
+  - ps: certes order finalize $order.location --dn "CN=*.certes.app" --out ./key.pem | Out-Null
+  - ps: certes az app $order.location www.certes.app certes-app --resource-group certes --private-key ./key.pem | Out-Null
+  - ps: certes az app $order.location api.certes.app certes-api --resource-group certes --private-key ./key.pem | Out-Null
   # deploy SPA
+  - ps: $env:REACT_APP_VERSION=$env:APPVEYOR_BUILD_NUMBER
   - cd ./src/Certes.Spa
-  - npm install
-  - npm run build
+  - npm install > nul
+  - npm run build > nul
   - cd %APPVEYOR_BUILD_FOLDER%
-  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --no-progress
-  # deploy az func
-  - dotnet restore
-  - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_PWD%
-  - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID%
-  - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID%
-  - az webapp deployment slot swap -g certes -n certes-app --slot ci
+  - az storage blob upload-batch -d spa -s ./src/Certes.Spa/build/ --no-progress > nul
+  # deploy web front end
+  - dotnet restore > nul
+  - msbuild src/Certes.App/Certes.App.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-app /p:Password=%MSDEPLOY_CERTES_APP_PWD% > nul
+  - az webapp deployment slot swap -g certes -n certes-app --slot ci > nul
+  # deploy api
+  - dotnet restore > nul
+  - msbuild src/Certes.Api/Certes.Api.csproj /p:DeployOnBuild=true /p:PublishProfile=certes-api /p:Password=%MSDEPLOY_CERTES_API_PWD% > nul
+  - az webapp deployment slot swap -g certes -n certes-api --slot ci > nul
 
 test: off

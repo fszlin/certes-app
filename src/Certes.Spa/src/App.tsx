@@ -1,3 +1,5 @@
+// tslint:disable:no-console
+// tslint:disable:no-debugger
 import * as React from 'react';
 import {
     Collapse,
@@ -7,22 +9,43 @@ import {
 } from 'reactstrap';
 
 import './App.css';
-
+import * as Authz from './Authz';
 import logo from './logo.svg';
 
-class App extends React.Component<{}, { isOpen: boolean }> {
-    constructor(props: { isOpen: boolean }) {
+interface IAppState {
+    isAuthenticated: boolean,
+    isOpen: boolean,
+};
+
+class App extends React.Component<{}, IAppState> {
+    constructor(props: {}) {
         super(props);
 
         this.toggle = this.toggle.bind(this);
+        this.login = this.login.bind(this);
+
         this.state = {
-            isOpen: false
+            isAuthenticated: false,
+            isOpen: false,
         };
     }
 
     public toggle() {
         this.setState({
             isOpen: !this.state.isOpen
+        });
+    }
+
+    public async componentDidMount() {
+        this.setState({
+            isAuthenticated: await Authz.acquireTokenSilent(),
+        });
+    }
+
+    public async login(evt: React.MouseEvent<HTMLElement>) {
+        evt.preventDefault();
+        this.setState({
+            isAuthenticated: await Authz.loginPopup(),
         });
     }
 
@@ -44,6 +67,16 @@ class App extends React.Component<{}, { isOpen: boolean }> {
                                 <li className="nav-item">
                                     <a className="nav-link" href="https://github.com/fszlin/certes/issues">
                                         <i className="far fa-bug" /> Issues</a>
+                                </li>
+                            </ul>
+                            <ul className="navbar-nav">
+                                <li className="nav-item">
+                                    {this.state.isAuthenticated ?
+                                        (<a className="nav-link" href="#">
+                                            <i className="far fa-lock-alt" /> My Certificates</a>) :
+                                        (<a className="nav-link" href="#" onClick={this.login}>
+                                            <i className="far fa-user-circle" /> Login</a>)
+                                    }
                                 </li>
                             </ul>
                         </Collapse>
@@ -79,7 +112,8 @@ class App extends React.Component<{}, { isOpen: boolean }> {
                 <footer className="container">
                     <div className="row">
                         <div className="col-lg-4">
-                            &copy; 2018 - Certes Project. All rights reserved
+                            &copy; 2018 - <a href="https://github.com/fszlin/certes">Certes</a> Project.
+                            All rights reserved
                         </div>
                         <nav aria-describedby="footer-label-legal" className="col-lg-2 offset-lg-6">
                             <h3 id="footer-label-legal">Legal</h3>

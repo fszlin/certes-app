@@ -6,8 +6,9 @@
   <ItemGroup>
     <PackageReference Include="Certes" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="2.1.5" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\DependencyInjection\DependencyInjection.csproj" />
@@ -19,9 +20,6 @@
     <None Update="local.settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Update="proxies.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
