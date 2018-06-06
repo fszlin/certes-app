@@ -9,6 +9,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Certes.Api
@@ -29,8 +30,9 @@ namespace Certes.Api
                 return new UnauthorizedResult();
             }
 
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
             var query = new TableQuery<AccountKeyEntity>()
-                .Where(TableQuery.GenerateFilterCondition(nameof(AccountKeyEntity.RowKey), QueryComparisons.Equal, user.Identity.Name))
+                .Where(TableQuery.GenerateFilterCondition(nameof(AccountKeyEntity.RowKey), QueryComparisons.Equal, userId))
                 .Take(1);
 
             var results = await accountKeys.ExecuteQuerySegmentedAsync(query, null);
@@ -44,7 +46,7 @@ namespace Certes.Api
             var orderEntity = new OrderEntity
             {
                 RowKey = orderCtx.Location.AbsoluteUri,
-                PartitionKey = user.Identity.Name,
+                PartitionKey = userId,
             };
 
             await orders.ExecuteAsync(TableOperation.InsertOrReplace(orderEntity));
