@@ -40,9 +40,6 @@ environment:
 cache:
 
 install:
-  - ps: wget https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-  - ps: .\dotnet-install.ps1 -Version 2.1.300 -InstallDir ./dotnet2.1
-  - ps: Install-Product node ''
   - az login --service-principal -u %CERTES_AZURE_CLIENT_ID% -p %CERTES_AZURE_CLIENT_SECRET% --tenant %CERTES_AZURE_TENANT_ID% > nul
   - az account set --subscription %CERTES_AZURE_SUBSCRIPTION_ID% > nul
 
