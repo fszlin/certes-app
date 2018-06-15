@@ -16,6 +16,7 @@ namespace Certes.Api
     {
         private const string Tenant = "certesapp.onmicrosoft.com";
         private const string ClientId = "acb2ad49-ba0d-478c-a23a-f6854bd3610f";
+        private static OpenIdConnectConfiguration openIdConnectConfiguration;
 
         public override async Task OnExecutingAsync(
             FunctionExecutingContext executingContext,
@@ -35,11 +36,7 @@ namespace Certes.Api
 
         public static async Task<ClaimsPrincipal> ValidateJwtToken(string token, CancellationToken cancellationToken)
         {
-            var endpoint = $"https://login.microsoftonline.com/{Tenant}/v2.0/.well-known/openid-configuration?p=B2C_1_susi";
-
-            var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(endpoint, new OpenIdConnectConfigurationRetriever());
-            var config = await configManager.GetConfigurationAsync(cancellationToken);
-
+            var config = await FetchConfig(cancellationToken);
             var validationParameters = new TokenValidationParameters()
             {
                 ValidAudience = ClientId,
@@ -52,6 +49,18 @@ namespace Certes.Api
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
             return jwtSecurityTokenHandler.ValidateToken(token, validationParameters, out _);
+        }
+
+        private static async Task<OpenIdConnectConfiguration> FetchConfig(CancellationToken cancellationToken)
+        {
+            if (openIdConnectConfiguration != null)
+            {
+                return openIdConnectConfiguration;
+            }
+
+            var endpoint = $"https://login.microsoftonline.com/{Tenant}/v2.0/.well-known/openid-configuration?p=B2C_1_susi";
+            var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(endpoint, new OpenIdConnectConfigurationRetriever());
+            return openIdConnectConfiguration = await configManager.GetConfigurationAsync(cancellationToken);
         }
     }
 }
