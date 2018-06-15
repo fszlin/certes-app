@@ -1,6 +1,3 @@
-// tslint:disable:no-console
-// tslint:disable:no-debugger
-
 import axios from 'axios';
 import * as Msal from 'msal';
 
@@ -30,10 +27,8 @@ export async function acquireTokenSilent() {
     try {
         const token = await maslApp.acquireTokenSilent([apiScope]);
         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        console.debug('acquireTokenSilent', true);
         return true;
     } catch {
-        console.debug('acquireTokenSilent', false);
         return false;
     }
 };
