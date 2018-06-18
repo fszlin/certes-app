@@ -6,6 +6,7 @@
     "alphanum-sort": "^1.0.2",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
+    "formik": "^0.11.11",
     "msal": "^0.1.7",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
@@ -22,7 +23,7 @@
     "build-css": "node-sass-chokidar src/ -o src/",
     "build-js": "react-scripts-ts build",
     "watch-css": "node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start-api": "cd ../Certes.Api/ && func start",
+    "start-api": "cd ../Certes.Api/ && func host start",
     "postinstall": "node lo0.js"
   },
   "devDependencies": {
