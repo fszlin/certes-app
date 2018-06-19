@@ -1,3 +1,6 @@
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Api.Data;
@@ -8,9 +11,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Certes.Api
 {

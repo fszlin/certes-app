@@ -1,8 +1,6 @@
-﻿using DependencyInjection;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text;
 
 namespace Certes.Api
 {
