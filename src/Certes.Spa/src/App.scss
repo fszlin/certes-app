@@ -40,3 +40,7 @@ main .jumbotron {
     margin-top: $grid-gutter-width / 2;
     margin-bottom: $grid-gutter-width / 2;
 }
+
+.mgnt-content {
+    min-height: calc(100vh - 210px);
+}

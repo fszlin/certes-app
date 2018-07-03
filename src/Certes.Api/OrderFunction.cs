@@ -1,3 +1,6 @@
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Certes.Api.Data;
@@ -8,18 +11,37 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Certes.Api
 {
     [AadAuthentication]
     public static class OrderFunction
     {
-        [FunctionName("NewOrder")]
+        private static readonly JsonSerializerSettings jsonSettings = JsonUtil.CreateSettings();
+
+        [FunctionName(nameof(Order))]
+        public static async Task<IActionResult> Order(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "order")] HttpRequest req,
+            [Table("Order")] CloudTable orders,
+            TraceWriter log)
+            {
+            var user = req.HttpContext.User;
+            if (!user.Identity.IsAuthenticated)
+            {
+                return new UnauthorizedResult();
+            }
+            
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var query = new TableQuery<OrderEntity>()
+                .Where(TableQuery.GenerateFilterCondition(nameof(AccountKeyEntity.RowKey), QueryComparisons.Equal, userId));
+
+            var orderEntries = await orders.ExecuteQuerySegmentedAsync(query, null);
+            return new JsonResult(orderEntries, jsonSettings);
+        }
+
+        [FunctionName(nameof(NewOrder))]
         public static async Task<IActionResult> NewOrder(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "new-order")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "new-order")] HttpRequest req,
             [Table("AccountKey")] CloudTable accountKeys,
             [Table("Order")] CloudTable orders,
             TraceWriter log)
